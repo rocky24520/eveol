@@ -85,6 +85,7 @@ public class ExcleUtil {
 	
 	
 	// 去读Excel的方法readExcel，该方法的入口参数为一个File对象
+	//jxl目前只支持xls扩展名的文件
     public static List<List<String>> readExcel(File file) {
         try {
             // 创建输入流，读取Excel
