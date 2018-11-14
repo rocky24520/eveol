@@ -71,16 +71,9 @@ public class ExcleUtil {
 			out.write(stringBuffer.toString().getBytes("utf-8"));
 			out.flush();
 			out.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileSystemNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+        }
     }
 	
 	
