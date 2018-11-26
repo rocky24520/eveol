@@ -59,9 +59,9 @@ public class ExcleUtil {
 	        		stringBuffer.append("'"+list.get(13)+"',");
 	        		stringBuffer.append("'"+list.get(14)+"',");
 	        		stringBuffer.append("'"+list.get(15)+"',");
-	        		stringBuffer.append("'"+list.get(16)+"',");
+	        		stringBuffer.append("'"+list.get(17)+"',");
 	        		stringBuffer.append("'1',");
-	        		stringBuffer.append("'0',");
+	        		stringBuffer.append("'"+(null != list.get(16) && !"".equals(list.get(16)) ? list.get(16) : "0") +"',");
 	        		stringBuffer.append("sysdate,");
 	        		stringBuffer.append("'pt');");
 	        		stringBuffer.append("\r\n");
