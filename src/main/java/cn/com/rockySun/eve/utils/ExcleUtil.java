@@ -19,17 +19,31 @@ import jxl.read.biff.BiffException;
 public class ExcleUtil {
 
 	public static void main(String[] args) {
-		File file = new File("D:/tmp/2222.xls");
-		File file1 = new File("D:/tmp/jiaoyan.sql");
-		List<List<String>> excelList = readExcel(file);
-        createSqlByExcle(excelList,file1);
+//		aaa();
+		bbb();
 
 	}
-	
-	public static void createSqlByExcle(List<List<String>> excelList,File file){
+	public static void aaa(){
+		File file = new File("D:/tmp/2222.xls");
+		File file1 = new File("D:/tmp/2.sql");
+		List<List<String>> excelList = readExcel(file);
 		String[] column = new String[]{"BASIC_ACTIVE_CODE","BASIC_ACTIVE_NAME","TABLE_CODE","TABLE_NAME","COLUMN_CODE",
 				"COLUMN_NAME","RULE_CODE","RULE_NAME","RULE_COMMENT","P_RANGE_CODE","P_RANGE_NAME","P_CONTAIN","P_LENGTH","P_FORMAT",
-				"P_MAX_VALUE","P_MIN_VALUE","P_REF_COLUMN"};
+				"P_MAX_VALUE","P_MIN_VALUE","P_PRECISION","P_REF_COLUMN"};
+		createSqlByExcle(excelList,file1,column);
+	}
+	public static void bbb(){
+		File file = new File("D:/tmp/3333.xls");
+		File file1 = new File("D:/tmp/3.sql");
+		List<List<String>> excelList = readExcel(file);
+		String[] column = new String[]{"BASIC_ACTIVE_CODE","BASIC_ACTIVE_NAME","TABLE_CODE","TABLE_NAME","COLUMN_CODE",
+				"COLUMN_NAME","RULE_CODE","RULE_NAME","RULE_COMMENT","P_RANGE_CODE","P_RANGE_NAME","P_CONTAIN","P_LENGTH","P_FORMAT",
+				"P_MAX_VALUE","P_MIN_VALUE","P_PRECISION","P_RANGE_MORE","P_REF_COLUMN","DEFINED10"};
+		createSqlByExcle(excelList,file1,column);
+	}
+	
+	public static void createSqlByExcle(List<List<String>> excelList,File file,String[] str){
+		
 		int index = 0;
 		try {
 			if(!file.exists()){
@@ -39,32 +53,27 @@ public class ExcleUtil {
 	        StringBuffer stringBuffer = new StringBuffer();
 			for(List<String> list : excelList){
 				if(index != 0){
-	        		stringBuffer.append("INSERT INTO QC_BPID_PUB_COLUMN_RULE(ID,BASIC_ACTIVE_CODE,BASIC_ACTIVE_NAME,TABLE_CODE,TABLE_NAME,COLUMN_CODE"
-	            		+ ",COLUMN_NAME,RULE_CODE,RULE_NAME,RULE_COMMENT,P_RANGE_CODE,P_RANGE_NAME,P_CONTAIN,P_LENGTH,P_FORMAT,P_MAX_VALUE"
-	            		+ ",P_MIN_VALUE,P_REF_COLUMN,USED_FLAG,P_PRECISION,CREATE_DATETIME,DATA_TYPE)values(");
-	        		stringBuffer.append("'"+java.util.UUID.randomUUID()+"',");
-	        		stringBuffer.append("'"+list.get(0)+"',");
-	        		stringBuffer.append("'"+list.get(1)+"',");
-	        		stringBuffer.append("'"+list.get(2)+"',");
-	        		stringBuffer.append("'"+list.get(3)+"',");
-	        		stringBuffer.append("'"+list.get(4)+"',");
-	        		stringBuffer.append("'"+list.get(5)+"',");
-	        		stringBuffer.append("'"+list.get(6)+"',");
-	        		stringBuffer.append("'"+list.get(7)+"',");
-	        		stringBuffer.append("'"+list.get(8)+"',");
-	        		stringBuffer.append("'"+list.get(9)+"',");
-	        		stringBuffer.append("'"+list.get(10)+"',");
-	        		stringBuffer.append("'"+list.get(11)+"',");
-	        		stringBuffer.append("'"+list.get(12)+"',");
-	        		stringBuffer.append("'"+list.get(13)+"',");
-	        		stringBuffer.append("'"+list.get(14)+"',");
-	        		stringBuffer.append("'"+list.get(15)+"',");
-	        		stringBuffer.append("'"+list.get(17)+"',");
-	        		stringBuffer.append("'1',");
-	        		stringBuffer.append("'"+(null != list.get(16) && !"".equals(list.get(16)) ? list.get(16) : "0") +"',");
-	        		stringBuffer.append("sysdate,");
-	        		stringBuffer.append("'pt');");
-	        		stringBuffer.append("\r\n");
+					int number = 0;
+					StringBuffer insert = new StringBuffer();
+					insert.append("INSERT INTO QC_BPID_PUB_COLUMN_RULE(ID");
+					StringBuffer values = new StringBuffer();
+					values.append("values('"+java.util.UUID.randomUUID().toString().substring(0, 31)+"'");
+					for(String tmp : list){
+						if(number == str.length){
+							break;
+						}
+						insert.append(","+str[number]+"");
+						if(16 == number){
+							values.append(",'"+(null != list.get(16) && !"".equals(list.get(16)) ? list.get(16) : "0") +"'");
+						}else{
+							values.append(",'"+tmp+"'");
+						}
+						
+						number++;
+					}
+					insert.append(",USED_FLAG,CREATE_DATETIME,DATA_TYPE)");
+					values.append(",'1',sysdate,'pt');");
+					stringBuffer.append(insert.toString()+values.toString()+"\r\n");
 				}
 				index ++;
 			}
