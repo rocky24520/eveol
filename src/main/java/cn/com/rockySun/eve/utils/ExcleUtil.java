@@ -21,7 +21,17 @@ import jxl.read.biff.BiffException;
 public class ExcleUtil {
 
 	public static void main(String[] args) {
-		yewuyuSql();
+		bbb();
+	}
+	
+	/**
+	 * 根据列规则文档，生成列规则脚本
+	 * @Description	: 
+	 * @Author		: 
+	 * @CreateTime	: 2018年12月14日 下午4:46:38
+	 */
+	public static void columnRuleSql(){
+		bbb();
 	}
 	
 	/**
@@ -31,7 +41,60 @@ public class ExcleUtil {
 	 * @CreateTime	: 2018年12月14日 下午4:06:55
 	 */
 	public static void tableRuleSql(){
-		
+		File file = new File("D:/tmp/20181214003.xls");
+		File file1 = new File("D:/tmp/20181214003.sql");
+		int index = 0;
+		List<List<String>> excelList = readExcel2(file);
+		try {
+			if(!file1.exists()){
+				file1.createNewFile();
+			}
+	        FileOutputStream out=new FileOutputStream(file1,false);
+	        StringBuffer stringBuffer = new StringBuffer();
+	        stringBuffer.append("DELETE FROM QC_BPID_PUB_TABLE_RULE;");
+			stringBuffer.append("\r\n");
+	        for(List<String> list : excelList){
+				if (index < 2){
+					index ++;
+					continue;
+				}
+				if(StringUtils.isEmpty(list.get(0))){
+					break;
+				}
+				StringBuffer insert = new StringBuffer();
+				insert.append("INSERT INTO QC_BPID_PUB_TABLE_RULE(ID,CLASS_CODE,CLASS_NAME,BASIC_ACTIVE_CODE"
+								+ ",BASIC_ACTIVE_NAME,TABLE_CODE,TABLE_NAME,COLUMN_CODE,COLUMN_NAME,RULE_CODE,RULE_NAME,RULE_COMMENT"
+								+ ",P_REF_TABLE,P_REF_COLUMN,DEFINED10,USED_FLAG) values (");
+
+				insert.append("'"+java.util.UUID.randomUUID().toString().substring(0, 31)+"',");
+				insert.append("'"+list.get(0)+"',");
+				insert.append("'"+list.get(1)+"',");
+				insert.append("'"+list.get(2)+"',");
+				insert.append("'"+list.get(3)+"',");
+				insert.append("'"+list.get(4)+"',");
+				insert.append("'"+list.get(5)+"',");
+				insert.append("'"+list.get(6)+"',");
+				insert.append("'"+list.get(7)+"',");
+				insert.append("'"+list.get(8)+"',");
+				insert.append("'"+list.get(9)+"',");
+				insert.append("'"+list.get(10)+"',");
+				insert.append("'"+list.get(11)+"',");
+				insert.append("'"+list.get(12)+"',");
+				insert.append("'"+list.get(13)+"',");
+				insert.append("'"+list.get(14)+"'");
+				insert.append(");");
+				stringBuffer.append(insert.toString()+"\r\n");
+				index ++;
+			}
+	        stringBuffer.append("UPDATE QC_BPID_PUB_TABLE_RULE A SET A.BUSINESS_ID = (SELECT B.ID FROM qc_bpid_pub_table_infor B WHERE A.TABLE_CODE = B.TABLE_CODE);");
+			stringBuffer.append("\r\n");
+	        stringBuffer.append("COMMIT;");
+			out.write(stringBuffer.toString().getBytes("utf-8"));
+			out.flush();
+			out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**
@@ -63,7 +126,7 @@ public class ExcleUtil {
 				}
 				StringBuffer insert = new StringBuffer();
 				insert.append("INSERT INTO QC_BPID_PUB_TABLE_INFOR(ID,CLASS_CODE,CLASS_NAME,BASIC_ACTIVE_CODE"
-								+ ",BASIC_ACTIVE_NAME,TABLE_CODE,TABLE_NAME,USED_FLAG，MASTER_SLAVE，DEFINED2) values (");
+								+ ",BASIC_ACTIVE_NAME,TABLE_CODE,TABLE_NAME,USED_FLAG,MASTER_SLAVE,DEFINED2) values (");
 
 				insert.append("'"+java.util.UUID.randomUUID().toString().substring(0, 31)+"',");
 				insert.append("'"+list.get(0)+"',");
@@ -146,8 +209,8 @@ public class ExcleUtil {
 		createSqlByExcle(excelList,file1,column);
 	}
 	public static void bbb(){
-		File file = new File("D:/tmp/3333.xls");
-		File file1 = new File("D:/tmp/3.sql");
+		File file = new File("D:/tmp/20181214003.xls");
+		File file1 = new File("D:/tmp/20181214004.sql");
 		List<List<String>> excelList = readExcel(file);
 		String[] column = new String[]{"BASIC_ACTIVE_CODE","BASIC_ACTIVE_NAME","TABLE_CODE","TABLE_NAME","COLUMN_CODE",
 				"COLUMN_NAME","RULE_CODE","RULE_NAME","RULE_COMMENT","P_RANGE_CODE","P_RANGE_NAME","P_CONTAIN","P_LENGTH","P_FORMAT",
@@ -241,4 +304,43 @@ public class ExcleUtil {
         return null;
     }
 
+ // 去读Excel的方法readExcel，该方法的入口参数为一个File对象
+ 	//jxl目前只支持xls扩展名的文件
+     public static List<List<String>> readExcel2(File file) {
+         try {
+             // 创建输入流，读取Excel
+             InputStream is = new FileInputStream(file.getAbsolutePath());
+             // jxl提供的Workbook类
+             Workbook wb = Workbook.getWorkbook(is);
+             // Excel的页签数量
+             int sheet_size = wb.getNumberOfSheets();
+                 List<List<String>> outerList=new ArrayList<List<String>>();
+                 // 每个页签创建一个Sheet对象
+                 Sheet sheet = wb.getSheet(1);
+                 // sheet.getRows()返回该页的总行数
+                 for (int i = 0; i < sheet.getRows(); i++) {
+                     List innerList=new ArrayList();
+                     // sheet.getColumns()返回该页的总列数
+                     for (int j = 0; j < sheet.getColumns(); j++) {
+                         String cellinfo = sheet.getCell(j, i).getContents();
+                         if(cellinfo.isEmpty()){
+                             innerList.add("");
+                         }else{
+                         	innerList.add(cellinfo);
+                         }
+                         System.out.print(cellinfo);
+                     }
+                     outerList.add(i, innerList);
+                     System.out.println();
+                 }
+                 return outerList;
+         } catch (FileNotFoundException e) {
+             e.printStackTrace();
+         } catch (BiffException e) {
+             e.printStackTrace();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+         return null;
+     }
 }
