@@ -31,7 +31,56 @@ public class ExcleUtil {
 	 * @CreateTime	: 2018年12月14日 下午4:46:38
 	 */
 	public static void columnRuleSql(){
-		bbb();
+		File file = new File("D:/tmp/20181214003.xls");
+		File file1 = new File("D:/tmp/20181214004.sql");
+		List<List<String>> excelList = readExcel(file);
+		String[] column = new String[]{"BASIC_ACTIVE_CODE","BASIC_ACTIVE_NAME","TABLE_CODE","TABLE_NAME","COLUMN_CODE",
+				"COLUMN_NAME","RULE_CODE","RULE_NAME","RULE_COMMENT","P_RANGE_CODE","P_RANGE_NAME","P_CONTAIN","P_LENGTH","P_FORMAT",
+				"P_MAX_VALUE","P_MIN_VALUE","P_PRECISION","P_RANGE_MORE","P_REF_COLUMN","DEFINED10"};
+		int index = 0;
+		try {
+			if(!file1.exists()){
+				file1.createNewFile();
+			}
+	        FileOutputStream out=new FileOutputStream(file1,false);
+	        StringBuffer stringBuffer = new StringBuffer();
+	        stringBuffer.append("DELETE FROM QC_BPID_PUB_COLUMN_RULE;");
+			stringBuffer.append("\r\n");
+			for(List<String> list : excelList){
+				if(index != 0){
+					int number = 0;
+					StringBuffer insert = new StringBuffer();
+					insert.append("INSERT INTO QC_BPID_PUB_COLUMN_RULE(ID");
+					StringBuffer values = new StringBuffer();
+					values.append("values('"+java.util.UUID.randomUUID().toString().substring(0, 31)+"'");
+					for(String tmp : list){
+						if(number == column.length){
+							break;
+						}
+						insert.append(","+column[number]+"");
+						if(16 == number){
+							values.append(",'"+(null != list.get(16) && !"".equals(list.get(16)) ? list.get(16) : "0") +"'");
+						}else{
+							values.append(",'"+tmp+"'");
+						}
+						
+						number++;
+					}
+					insert.append(",USED_FLAG,CREATE_DATETIME,DATA_TYPE)");
+					values.append(",'1',sysdate,'pt');");
+					stringBuffer.append(insert.toString()+values.toString()+"\r\n");
+					stringBuffer.append("UPDATE qc_bpid_pub_column_rule A SET A.BUSINESS_ID = (SELECT B.ID FROM qc_bpid_pub_table_infor B WHERE A.TABLE_CODE = B.TABLE_CODE);");
+					stringBuffer.append("\r\n");
+					stringBuffer.append("commit;");
+				}
+				index ++;
+			}
+			out.write(stringBuffer.toString().getBytes("utf-8"));
+			out.flush();
+			out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**
